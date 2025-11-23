@@ -12,6 +12,18 @@ using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// ==============================================================
+// === AUTOMAX BRANDING START ===================================
+// ==============================================================
+Console.ForegroundColor = ConsoleColor.Cyan;
+Console.WriteLine("---------------------------------------------");
+Console.WriteLine($"Automax by akam {StaticHelper.VersionNumber}");
+Console.WriteLine("Vehicle Maintenance Tracker- Automax");
+Console.WriteLine("Powered by Automax(Group E)");
+Console.WriteLine("---------------------------------------------");
+Console.ResetColor();
+// ==============================================================
+
 //Additional JsonFile
 builder.Configuration.AddJsonFile(StaticHelper.UserConfigPath, optional: true, reloadOnChange: true);
 builder.Configuration.AddJsonFile(StaticHelper.ServerConfigPath, optional: true, reloadOnChange: true);
@@ -28,9 +40,11 @@ if (!string.IsNullOrWhiteSpace(builder.Configuration["LUBELOGGER_LOCALE_OVERRIDE
     CultureInfo.DefaultThreadCurrentUICulture = overrideCulture;
 }
 
-//Print Messages
-StaticHelper.InitMessage(builder.Configuration);
-//Check Migration
+// --- DISABLED OLD BRANDING ---
+// StaticHelper.InitMessage(builder.Configuration); 
+// -----------------------------
+
+//Check Migration (This creates the data folders, so we must keep it)
 StaticHelper.CheckMigration(builder.Environment.WebRootPath, builder.Environment.ContentRootPath);
 
 // Add services to the container.

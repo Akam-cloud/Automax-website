@@ -1,4 +1,4 @@
-
+<!-- 
 <html lang="en" data-bs-theme="dark">
 <head>
     <meta charset="utf-8" />
@@ -120,7 +120,7 @@
 			<ul class="nav d-none d-lg-flex">
 		    <li class="nav-item"><a class="nav-link" href="#showcase"><i class="bi bi-eyeglasses me-2"></i>Showcase</a></li>
             <li class="nav-item"><a class="nav-link" href="#features"><i class="bi bi-card-checklist me-2"></i>Features</a></li>
-			<!--<li class="nav-item"><a class="nav-link" href="#demo"><i class="bi bi-eyedropper me-2"></i>Login</a></li> -->
+			<li class="nav-item"><a class="nav-link" href="#demo"><i class="bi bi-eyedropper me-2"></i>Login</a></li> 
 			<li class="nav-item"><a class="nav-link" href="login.html"><i class="bi bi-box-arrow-in-right me-2"></i>Login</a></li>
 
 
@@ -141,7 +141,7 @@
 			</ul>
 		</div>
 	</div>
-	<!-- 
+	
 	<div class="big-container">
 		<div class="full-height d-flex align-items-center">
 			<h6 class="display-6 half text-center">Self-Hosted, Open-Source, Unconventionally-Named Vehicle Maintenance Records and Fuel Mileage Tracker<br/><a class='me-2 mt-2 btn btn-lg btn-primary' href="https://docs.lubelogger.com/Installation/Getting%20Started"><span class='d-flex align-items-center'>Get Started<i style="font-size:1rem;" class="ms-2 bi bi-box-arrow-up-right"></i></span></a><a class='mt-2 btn-lg btn btn-outline-primary' href="#demo">Try the demo</a></h6>
@@ -149,8 +149,7 @@
 				<img class="carousel-img" src="garage.png"/>
 			</div>
 		</div>
-	-->
-
+	
 	
 		<div id="showcase" class="full-height alt d-flex align-items-center">
 			<div class="half">
@@ -183,7 +182,7 @@
 			</div>
 			<h6 class="half display-6 text-center"> Stay ahead of maintenance schedules<br/><small class="text-secondary"> Configure alerts by time, mileage, or earliest threshold</small></h6>
 		</div>
-		<!-- 
+		
 		<div id="features" class="full-height d-flex align-items-center justify-content-center flex-column">
 			<h6 class="display-6 mb-3 text-center">Core Features</h6>
 			<div style="width:100%;" class="d-none d-md-flex row row-cols-1 row-cols-md-3 g-4 justify-content-center">
@@ -256,8 +255,8 @@
 				<li>Single Sign On</li>
 			</ul>
 		</div>
-	-->
-		 <!-- Features Section -->
+	
+	
   <section id="features" class="features">
     <div class="container">
       <h2>Why to choose Automax?</h2>
@@ -287,15 +286,258 @@
     </div>
   </section>
 
-		<!-- 
+		
 		<div id="demo" class="full-height alt d-flex align-items-center">
 			<div class="half">
 				<img class="carousel-img" src="demo.png"/>
 			</div>
 			<h6 class="half display-6 text-center">Try the <a href="https://demo.lubelogger.com" class='link-light link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover'>demo<i style="font-size:1.5rem;" class="ms-2 bi bi-box-arrow-up-right"></i></a><br/><small class="text-secondary">Login using the username <code>test</code> and password <code>1234</code></small></h6>
 		</div>
-	-->
+	
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
 </body>
 </html> 
+-->
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/x-icon" href="logo.png">
+  <title>Automax</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <style>
+    /* === Global Reset & Fonts === */
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f8fafc;
+      color: #2b2b2b;
+      line-height: 1.6;
+    }
+
+    h1, h2, h5, h6 {
+      font-weight: 700;
+      color: #1e293b;
+    }
+
+    /* === Navbar === */
+    .navbar-custom {
+      background: linear-gradient(90deg, #0ea5e9, #14b8a6);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+      padding: 8px 16px;
+    }
+    .navbar-custom .nav-link {
+      color: #ffffff !important;
+      font-weight: 500;
+      transition: color 0.3s;
+    }
+    .navbar-custom .nav-link:hover {
+      color: #ffedd5 !important;
+    }
+
+    /* === Hero / Showcase Sections === */
+    .full-height {
+      padding: 80px 5%;
+      background: #ffffff;
+    }
+    .full-height.alt {
+      background: #f1f5f9;
+    }
+    .carousel-img {
+      height: auto;
+      max-height: 380px;
+      width: 100%;
+      object-fit: contain;
+      border-radius: 16px;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.08);
+      background: #ffffff;
+      padding: 10px;
+    }
+    h6.half {
+      font-size: 1.75rem;
+      font-weight: 600;
+      color: #0f172a;
+    }
+    h6.half small {
+      display: block;
+      margin-top: 8px;
+      font-size: 1rem;
+      color: #64748b;
+    }
+
+    /* === Features Section === */
+    .features {
+      padding: 100px 0;
+      background: linear-gradient(180deg, #e0f7fa, #ffffff);
+    }
+    .features h2 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 60px;
+      text-align: center;
+      color: #0f172a;
+    }
+    .feature-card {
+      background: #ffffff;
+      padding: 40px 30px;
+      border-radius: 16px;
+      text-align: center;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+      border: none;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      height: 100%;
+    }
+    .feature-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 10px 24px rgba(0,0,0,0.12);
+    }
+    .feature-card i {
+      font-size: 3rem;
+      color: #14b8a6;
+      margin-bottom: 20px;
+    }
+    .feature-card h5 {
+      font-size: 1.5rem;
+      color: #0f172a;
+      margin-bottom: 12px;
+    }
+    .feature-card p {
+      font-size: 1rem;
+      color: #475569;
+    }
+
+    /* === Footer === */
+    .footer {
+      background: #0f172a;
+      color: #e2e8f0;
+      padding: 20px;
+      text-align: center;
+      font-size: 0.9rem;
+    }
+
+    /* === Responsive === */
+    @media (max-width: 991px) {
+      .full-height {
+        flex-direction: column;
+        text-align: center;
+      }
+      .half {
+        width: 100% !important;
+        margin-bottom: 20px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+   
+  <nav class="navbar navbar-expand-lg navbar-custom sticky-top">
+    <div class="container-fluid">
+      <a class="navbar-brand text-white" href="#"><img src="logo.png" alt="Automax" height="40"></a>
+      <button class="navbar-toggler text-white" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item"><a class="nav-link" href="#showcase"><i class="bi bi-eyeglasses me-2"></i>Showcase</a></li>
+          <li class="nav-item"><a class="nav-link" href="#features"><i class="bi bi-card-checklist me-2"></i>Features</a></li>
+        <!--  <li class="nav-item"><a class="nav-link" href="login.html"><i class="bi bi-box-arrow-in-right me-2"></i>Login</a></li>-->
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+   
+  <div id="showcase" class="full-height d-flex align-items-center">
+    <div class="half w-50">
+      <img class="carousel-img" src="dashboard.png" alt="Dashboard">
+    </div>
+    <h6 class="half w-50 text-center">Visualize your vehicle spending at a glance<br/>
+      <small>Breakdown costs by time period and expense type</small>
+    </h6>
+  </div>
+
+  <div class="full-height alt d-flex align-items-center">
+    <h6 class="half w-50 text-center">Organize and monitor your maintenance tasks <br/>
+      <small>Filter by status, urgency, and completion stage</small>
+    </h6>
+    <div class="half w-50">
+      <img class="carousel-img" src="planner.png" alt="Planner">
+    </div>
+  </div>
+
+  <div class="full-height d-flex align-items-center">
+    <div class="half w-50">
+      <img class="carousel-img" src="servicerecord.png" alt="Service Record">
+    </div>
+    <h6 class="half w-50 text-center">Maintain complete service histories for all vehicles<br/>
+      <small>Store receipts, invoices, and warranty documents</small>
+    </h6>
+  </div>
+
+  <div class="full-height alt d-flex align-items-center">
+    <h6 class="half w-50 text-center">Compatible with multiple measurement units worldwide</h6>
+    <div class="half w-50">
+      <img class="carousel-img" src="fuelmileage.png" alt="Fuel Mileage">
+    </div>
+  </div>
+
+  <div class="full-height d-flex align-items-center">
+    <div class="half w-50">
+      <img class="carousel-img" src="reminder.png" alt="Reminders">
+    </div>
+    <h6 class="half w-50 text-center">Stay ahead of maintenance schedules<br/>
+      <small>Configure alerts by time, mileage, or earliest threshold</small>
+    </h6>
+  </div>
+
+    
+  <section id="features" class="features">
+    <div class="container">
+      <h2>Why Choose Automax?</h2>
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div class="feature-card">
+            <i class="bi bi-bar-chart-line"></i>
+            <h5>Dashboard</h5>
+            <p>Get a clear overview of fuel, costs, and service history.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="feature-card">
+            <i class="bi bi-bell"></i>
+            <h5>Reminders</h5>
+            <p>Never miss oil changes or scheduled services again.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="feature-card">
+            <i class="bi bi-fuel-pump"></i>
+            <h5>Fuel Tracking</h5>
+            <p>Monitor consumption with MPG, KM/L, or L/100KM support.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+	
+		<div id="demo" class="full-height alt d-flex align-items-center">
+			<div class="half">
+				<img class="carousel-img" src="demo.png"/>
+			</div>
+			<h6 class="half display-6 text-center">Try the <a href="login.html" class='link-light link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover'>demo<i style="font-size:1.5rem;" class="ms-2 bi bi-box-arrow-up-right"></i></a><br/><small class="text-secondary">Login using the username <code>test</code> and password <code>1234</code></small></h6>
+		</div>
+
+     <footer class="footer">
+    <p>&copy; 2025 Automax. All rights reserved.</p>
+  </footer>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

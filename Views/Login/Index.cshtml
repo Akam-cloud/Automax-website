@@ -1,67 +1,142 @@
-﻿@using CarCareTracker.Helper
+﻿
+
+@using CarCareTracker.Helper
 @inject IConfigHelper config
 @inject ITranslationHelper translator
 @model string
 @{
     var userLanguage = config.GetServerLanguage();
-    var registrationDisabled = config.GetServerDisabledRegistration();
-    var openIdConfigName = config.GetOpenIDConfig().Name;
-}
-@{
     ViewData["Title"] = "Login";
+    Layout = null; 
 }
+
 @section Scripts {
     <script src="~/js/login.js?v=@StaticHelper.VersionNumber"></script>
 }
-<div class="no-top-pad container d-flex align-items-center justify-content-center" style="height:100vh">
-    <div>
-        <div style="max-width:204px;">
-            <img src="@config.GetLogoUrl()" class="lubelogger-logo" />
-            <div class="form-group">
-                <label for="inputUserName">@translator.Translate(userLanguage, "Username")</label>
-                <input type="text" id="inputUserName" class="form-control">
-            </div>
-            <div class="form-group">
-                <label for="inputUserPassword">@translator.Translate(userLanguage, "Password")</label> 
-                <div class="input-group">
-                    <input type="password" id="inputUserPassword" onkeyup="callBackOnEnter(event, performLogin)" class="form-control">
-                    <div class="input-group-text">
-                        <button type="button" class="btn btn-sm text-secondary password-visible-button" onclick="togglePasswordVisibility(this)"><i class="bi bi-eye"></i></button>
-                    </div>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login - Automax</title>
+    <link rel="icon" type="image/x-icon" href="/defaults/favicon.ico">
+    <link rel="stylesheet" href="/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <style>
+        /* AUTOMAX THEME */
+        body {
+            background-color: #212529; /* Dark Background */
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .brand-text {
+            color: #ffc107; /* Automax Yellow */
+            font-weight: 800;
+            font-style: italic;
+            font-size: 2rem;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+        .form-control {
+            background-color: #2b3035;
+            border: 1px solid #495057;
+            color: white;
+        }
+        .form-control:focus {
+            background-color: #2b3035;
+            color: white;
+            border-color: #ffc107;
+            box-shadow: 0 0 0 0.25rem rgba(255, 193, 7, 0.25);
+        }
+        .input-group-text {
+            background-color: #2b3035;
+            border-color: #495057;
+            color: #6c757d;
+            cursor: pointer;
+        }
+        .btn-warning {
+            background-color: #ffc107;
+            border: none;
+            font-weight: 600;
+            width: 100%;
+            padding: 10px;
+        }
+        .btn-warning:hover {
+            background-color: #ffca2c;
+        }
+        a.text-primary {
+            color: #3b82f6 !important;
+            text-decoration: none;
+        }
+        a.text-primary:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div style="width: 100%; max-width: 350px; padding: 20px;">
+        
+        <div class="text-center mb-4">
+            <img src="@config.GetLogoUrl()" alt="Logo" style="height:50px;">
+            <span class="brand-text">Automax</span>
+        </div>
+
+        <div class="form-group mb-3">
+            <label class="form-label text-white-50">@translator.Translate(userLanguage, "Username")</label>
+            <input type="text" id="inputUserName" class="form-control">
+        </div>
+
+        <div class="form-group mb-3">
+            <label class="form-label text-white-50">@translator.Translate(userLanguage, "Password")</label> 
+            <div class="input-group">
+                <input type="password" id="inputUserPassword" onkeyup="callBackOnEnter(event, performLogin)" class="form-control">
+                <div class="input-group-text" onclick="togglePasswordVisibility(this)">
+                     <i class="bi bi-eye"></i>
                 </div>
             </div>
-            <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" role="switch" id="inputPersistent">
-                <label class="form-check-label" for="inputPersistent">@translator.Translate(userLanguage, "Remember Me")</label>
+        </div>
+
+        <div class="form-check form-switch mb-3">
+            <input class="form-check-input" type="checkbox" role="switch" id="inputPersistent">
+            <label class="form-check-label text-white-50" for="inputPersistent">@translator.Translate(userLanguage, "Remember Me")</label>
+        </div>
+
+        <div class="d-grid">
+            <button type="button" class="btn btn-warning mt-2" onclick="performLogin()">
+                <i class="bi bi-box-arrow-in-right me-2"></i>@translator.Translate(userLanguage, "Login")
+            </button>
+        </div>
+
+        <div class="d-flex justify-content-center mt-2">
+             <small class="text-danger" id="loginErrorMsg"></small>
+        </div>
+
+        <div class="text-center mt-3">
+            <div class="d-grid">
+                <a href="/Login/ForgotPassword" class="text-primary mb-2">@translator.Translate(userLanguage, "Forgot Password")</a>
             </div>
             <div class="d-grid">
-                <button type="button" class="btn btn-warning mt-2" onclick="performLogin()"><i class="bi bi-box-arrow-in-right me-2"></i>@translator.Translate(userLanguage, "Login")</button>
+                <a href="/Login/Registration" class="text-primary">Register New Account</a>
             </div>
-            @if (!string.IsNullOrWhiteSpace(openIdConfigName))
-            {
-                <div class="d-grid">
-                    <button type="button" class="btn btn-secondary mt-2" onclick="remoteLogin()"><i class="bi bi-box-arrow-in-right me-2"></i>@($"{translator.Translate(userLanguage, "Login via")} {openIdConfigName}")</button>
-                </div>
-            }
-            <div class="d-flex justify-content-center">
-                <div class="form-group">
-                    <small class="text-body-secondary">@config.GetMOTD()</small>
-                </div>
-            </div>
-            <div class="d-grid">
-                <a href="/Login/ForgotPassword" class="btn btn-link mt-2">@translator.Translate(userLanguage, "Forgot Password")</a>
-            </div>
-            @if (!registrationDisabled)
-            {
-                <div class="d-grid">
-                    <a href="/Login/Registration" class="btn btn-link mt-2">@translator.Translate(userLanguage, "Register")</a>
-                </div>
-            }
         </div>
     </div>
-</div>
-<script>
-    function getRedirectURL() {
-        return { url: decodeHTMLEntities('@Model') };
-    }
-</script>
+
+    <script src="/lib/jquery/dist/jquery.min.js"></script>
+    <script src="/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function getRedirectURL() { return { url: decodeHTMLEntities('@Model') }; }
+        function togglePasswordVisibility(btn) {
+            var input = document.getElementById("inputUserPassword");
+            if (input.type === "password") {
+                input.type = "text";
+            } else {
+                input.type = "password";
+            }
+        }
+    </script>
+</body>
+</html>

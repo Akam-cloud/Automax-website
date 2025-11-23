@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en" data-bs-theme="dark">
 <head>
   <meta charset="utf-8" />
@@ -46,5 +46,353 @@
       <a href="#">Forgot Password?</a> | <a href="#">Register</a>
     </div>
   </div>
+</body>
+</html>
+
+
+  2nd 
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login - Automax</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  
+  <style>
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background-color: #121212;
+      color: #fff;
+      margin: 0;
+      font-family: "Segoe UI", sans-serif;
+    }
+    .login-box {
+      background: #1e1e1e;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0px 0px 15px rgba(0,0,0,0.5);
+      width: 350px;
+    }
+    .login-box h3 {
+      color: #00bcd4;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-box">
+    <h3 class="text-center mb-3"><i class="bi bi-box-arrow-in-right me-2"></i>Login</h3>
+
+    <form id="loginForm" method="post" action="/Login/Login">
+      <div class="mb-3">
+        <label class="form-label">Username</label>
+        <input type="text" class="form-control" name="UserName" placeholder="Enter username" required>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Password</label>
+        <input type="password" class="form-control" name="Password" placeholder="Enter password" required>
+      </div>
+
+      <div class="form-check mb-3">
+        <input type="checkbox" class="form-check-input" id="rememberMe" name="IsPersistent">
+        <label class="form-check-label" for="rememberMe">Remember me</label>
+      </div>
+
+      <button type="submit" class="btn btn-primary w-100">Login</button>
+    </form>
+
+    <div class="mt-3 text-center">
+      <a href="#">Forgot Password?</a> | <a href="#">Register</a>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById("loginForm").addEventListener("submit", async function(e) {
+      e.preventDefault(); // Stop page reload
+      const formData = new FormData(this);
+
+      const response = await fetch("/Login/Login", {
+        method: "POST",
+        body: formData
+      });
+
+      const result = await response.json();
+
+      if (result === true) {
+        // Redirect on success
+        window.location.href = "/Home";
+      } else {
+        alert("Invalid username or password.");
+      }
+    });
+  </script>
+  <script>
+    document.getElementById("loginForm").addEventListener("submit", async function (e) {
+        e.preventDefault();
+
+        const formData = new FormData(this);
+
+        const response = await fetch("/Login/Login", {
+            method: "POST",
+            body: formData
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            window.location.href = "/Home";
+        } else {
+            alert(result.message || "Login failed");
+        }
+    });
+</script>
+
+</body>
+</html>
+3rd 
+
+
+<!DOCTYPE html> 
+<html lang="en" data-bs-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login - Automax</title>
+  link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+   <style>
+    body {
+      height: 100vh;
+      margin: 0;
+      background: linear-gradient(135deg, #0c0c0c, #1a1a1a);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    .login-box {
+      background: #1e1e1e;
+      width: 380px;
+      padding: 2.5rem;
+      border-radius: 12px;
+      box-shadow: 0px 0px 28px rgba(0,0,0,0.6);
+      animation: fadeIn 0.6s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(10px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+
+    .brand-title {
+      font-size: 1.9rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    .form-control {
+      background-color: #121212;
+      border-color: #333;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-box">
+    <h3 class="text-center mb-2 brand-title">
+      <i class="bi bi-speedometer2 me-2"></i>Automax
+    </h3>
+    <p class="text-center text-secondary mb-4">Vehicle Maintenance System</p>
+
+    <form method="post" action="/login/authenticate">
+      <div class="mb-3">
+        <label class="form-label">Username</label>
+        <input type="text" name="username" class="form-control" placeholder="Enter username" required>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Password</label>
+        <input type="password" name="password" class="form-control" placeholder="Enter password" required>
+      </div>
+
+      <div class="form-check mb-3">
+        <input type="checkbox" class="form-check-input" id="rememberMe">
+        <label class="form-check-label" for="rememberMe">Remember me</label>
+      </div>
+
+      <button type="submit" class="btn btn-primary w-100">
+        <i class="bi bi-box-arrow-in-right me-1"></i> Login
+      </button>
+    </form>
+    <div class="mt-3 text-center">
+      <a href="#" class="text-decoration-none">Forgot Password?</a>  
+    </div>
+  </div>
+</body>
+</html>
+-->
+
+
+
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login - Automax</title>
+  <link rel="icon" type="image/x-icon" href="logo.png">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  
+  <style>
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      /* Matches the LubeLogger Dark Background */
+      background-color: #212529; 
+      color: #fff;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .login-box {
+      width: 100%;
+      max-width: 320px;
+      padding: 1rem;
+      /* Removed the background card color to match the screenshot's "floating" look */
+    }
+
+    /* === Branding Text (Automax) === */
+    .brand-text {
+      color: #ffc107; /* The LubeLogger Yellow */
+      font-weight: 800;
+      font-style: italic;
+      font-size: 2rem;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+
+    /* === Inputs === */
+    .form-control {
+      background-color: #2b3035;
+      border: 1px solid #495057;
+      color: #e9ecef;
+    }
+    
+    .form-control:focus {
+      background-color: #2b3035;
+      border-color: #ffc107;
+      box-shadow: 0 0 0 0.25rem rgba(255, 193, 7, 0.25);
+      color: #e9ecef;
+    }
+
+    /* === Eye Icon === */
+    .input-group-text {
+        background-color: #2b3035;
+        border-color: #495057;
+        cursor: pointer;
+    }
+    .input-group-text:hover i {
+        color: #ffc107;
+    }
+
+    /* === Yellow Login Button === */
+    .btn-warning {
+      background-color: #ffc107;
+      border: none;
+      font-weight: 500;
+      padding: 10px;
+    }
+    .btn-warning:hover {
+      background-color: #ffca2c;
+    }
+
+    /* === Footer Links === */
+    .bottom-links a {
+        display: block; /* Stacks them vertically */
+        margin-top: 15px;
+        text-decoration: none;
+        color: #3b82f6;
+    }
+    .bottom-links a:hover {
+        text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="login-box">
+    
+    <div class="text-center mb-4">
+       <img src="logo.png" alt="Logo" height="50">
+       <span class="brand-text">Automax</span>
+    </div>
+
+    <form>
+      <div class="mb-3">
+        <label class="form-label text-white-50">Username</label>
+        <input type="text" class="form-control" id="inputUserName">
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label text-white-50">Password</label>
+        <div class="input-group">
+            <input type="password" class="form-control" id="inputUserPassword">
+            <span class="input-group-text" onclick="togglePassword()">
+                <i class="bi bi-eye" id="toggleIcon"></i>
+            </span>
+        </div>
+      </div>
+
+      <div class="form-check form-switch mb-3">
+        <input class="form-check-input" type="checkbox" role="switch" id="rememberMe">
+        <label class="form-check-label text-white-50" for="rememberMe">Remember Me</label>
+      </div>
+
+      <button type="button" onclick="performLogin()" class="btn btn-warning w-100">
+        <i class="bi bi-box-arrow-in-right me-2"></i> Login
+      </button>
+
+    </form>
+
+    <div class="text-center bottom-links">
+      <a href="#">Forgot Password</a>
+      <a href="#">Register</a>
+    </div>
+  </div>
+
+  <script>
+    // 1. Toggle Password Visibility
+    function togglePassword() {
+        const passwordInput = document.getElementById('inputUserPassword');
+        const icon = document.getElementById('toggleIcon');
+        
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            icon.classList.remove('bi-eye');
+            icon.classList.add('bi-eye-slash');
+        } else {
+            passwordInput.type = 'password';
+            icon.classList.remove('bi-eye-slash');
+            icon.classList.add('bi-eye');
+        }
+    }
+
+    // 2. Login Function
+    function performLogin() {
+        // This is where you would redirect to your main app
+        alert("Login successful! (Demo)");
+        // window.location.href = "dashboard.html"; 
+    }
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

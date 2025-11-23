@@ -1,4 +1,6 @@
-﻿using CarCareTracker.Helper;
+﻿
+/*
+using CarCareTracker.Helper;
 using CarCareTracker.Logic;
 using CarCareTracker.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -436,6 +438,334 @@ namespace CarCareTracker.Controllers
             {
                 var result = _loginLogic.DeleteRootUserCredentials();
                 //destroy any login cookies.
+                if (result)
+                {
+                    Response.Cookies.Delete("ACCESS_TOKEN");
+                }
+                return Json(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error on saving config file.");
+            }
+            return Json(false);
+        }
+        [Authorize]
+        [HttpPost]
+        public IActionResult LogOut()
+        {
+            Response.Cookies.Delete("ACCESS_TOKEN");
+            var remoteAuthConfig = _config.GetOpenIDConfig();
+            if (remoteAuthConfig.DisableRegularLogin && !string.IsNullOrWhiteSpace(remoteAuthConfig.LogOutURL))
+            {
+                return Json(remoteAuthConfig.LogOutURL);
+            }
+            return Json("/Login");
+        }
+    }
+}
+*/
+
+
+
+using CarCareTracker.Helper;
+using CarCareTracker.Logic;
+using CarCareTracker.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.JsonWebTokens;
+using System.Text.Json;
+
+namespace CarCareTracker.Controllers
+{
+    public class LoginController : Controller
+    {
+        private IDataProtector _dataProtector;
+        private ILoginLogic _loginLogic;
+        private IConfigHelper _config;
+        private readonly ILogger<LoginController> _logger;
+        public LoginController(
+            ILogger<LoginController> logger,
+            IDataProtectionProvider securityProvider,
+            ILoginLogic loginLogic,
+            IConfigHelper config
+            )
+        {
+            _dataProtector = securityProvider.CreateProtector("login");
+            _logger = logger;
+            _loginLogic = loginLogic;
+            _config = config;
+        }
+        public IActionResult Index(string redirectURL = "")
+        {
+            var remoteAuthConfig = _config.GetOpenIDConfig();
+            if (remoteAuthConfig.DisableRegularLogin && !string.IsNullOrWhiteSpace(remoteAuthConfig.LogOutURL))
+            {
+                var generatedState = Guid.NewGuid().ToString().Substring(0, 8);
+                remoteAuthConfig.State = generatedState;
+                var pkceKeyPair = _loginLogic.GetPKCEChallengeCode();
+                remoteAuthConfig.CodeChallenge = pkceKeyPair.Value;
+                if (remoteAuthConfig.ValidateState)
+                {
+                    Response.Cookies.Append("OIDC_STATE", remoteAuthConfig.State, new CookieOptions { Expires = new DateTimeOffset(DateTime.Now.AddMinutes(5)) });
+                }
+                if (remoteAuthConfig.UsePKCE)
+                {
+                    Response.Cookies.Append("OIDC_VERIFIER", pkceKeyPair.Key, new CookieOptions { Expires = new DateTimeOffset(DateTime.Now.AddMinutes(5)) });
+                }
+                var remoteAuthURL = remoteAuthConfig.RemoteAuthURL;
+                return Redirect(remoteAuthURL);
+            }
+            return View(model: redirectURL);
+        }
+        
+        public IActionResult Registration(string token = "", string email = "")
+        {
+            // --- HACK: COMMENTED OUT TO ALLOW REGISTRATION ---
+            // if (_config.GetServerDisabledRegistration())
+            // {
+            //     return RedirectToAction("Index");
+            // }
+            // -------------------------------------------------
+
+            var viewModel = new LoginModel
+            {
+                EmailAddress = string.IsNullOrWhiteSpace(email) ? string.Empty : email,
+                Token = string.IsNullOrWhiteSpace(token) ? string.Empty : token
+            };
+            return View(viewModel);
+        }
+
+        public IActionResult ForgotPassword()
+        {
+            return View();
+        }
+        public IActionResult ResetPassword(string token = "", string email = "")
+        {
+            var viewModel = new LoginModel
+            {
+                EmailAddress = string.IsNullOrWhiteSpace(email) ? string.Empty : email,
+                Token = string.IsNullOrWhiteSpace(token) ? string.Empty : token
+            };
+            return View(viewModel);
+        }
+        public IActionResult GetRemoteLoginLink()
+        {
+            var remoteAuthConfig = _config.GetOpenIDConfig();
+            var generatedState = Guid.NewGuid().ToString().Substring(0, 8);
+            remoteAuthConfig.State = generatedState;
+            var pkceKeyPair = _loginLogic.GetPKCEChallengeCode();
+            remoteAuthConfig.CodeChallenge = pkceKeyPair.Value;
+            if (remoteAuthConfig.ValidateState)
+            {
+                Response.Cookies.Append("OIDC_STATE", remoteAuthConfig.State, new CookieOptions { Expires = new DateTimeOffset(DateTime.Now.AddMinutes(5)) });
+            }
+            if (remoteAuthConfig.UsePKCE)
+            {
+                Response.Cookies.Append("OIDC_VERIFIER", pkceKeyPair.Key, new CookieOptions { Expires = new DateTimeOffset(DateTime.Now.AddMinutes(5)) });
+            }
+            var remoteAuthURL = remoteAuthConfig.RemoteAuthURL;
+            return Json(remoteAuthURL);
+        }
+        public async Task<IActionResult> RemoteAuth(string code, string state = "")
+        {
+            try
+            {
+                if (!string.IsNullOrWhiteSpace(code))
+                {
+                    var httpClient = new HttpClient();
+                    var openIdConfig = _config.GetOpenIDConfig();
+                    if (openIdConfig.ValidateState)
+                    {
+                        var storedStateValue = Request.Cookies["OIDC_STATE"];
+                        if (!string.IsNullOrWhiteSpace(storedStateValue))
+                        {
+                            Response.Cookies.Delete("OIDC_STATE");
+                        }
+                        if (string.IsNullOrWhiteSpace(storedStateValue) || string.IsNullOrWhiteSpace(state) || storedStateValue != state)
+                        {
+                            _logger.LogInformation("Failed OIDC State Validation");
+                            return new RedirectResult("/Login");
+                        }
+                    }
+                    var httpParams = new List<KeyValuePair<string, string>>
+                {
+                      new KeyValuePair<string, string>("code", code),
+                      new KeyValuePair<string, string>("grant_type", "authorization_code"),
+                      new KeyValuePair<string, string>("client_id", openIdConfig.ClientId),
+                      new KeyValuePair<string, string>("client_secret", openIdConfig.ClientSecret),
+                      new KeyValuePair<string, string>("redirect_uri", openIdConfig.RedirectURL)
+                };
+                    if (openIdConfig.UsePKCE)
+                    {
+                        var storedVerifier = Request.Cookies["OIDC_VERIFIER"];
+                        if (!string.IsNullOrWhiteSpace(storedVerifier))
+                        {
+                            httpParams.Add(new KeyValuePair<string, string>("code_verifier", storedVerifier));
+                            Response.Cookies.Delete("OIDC_VERIFIER");
+                        }
+                    }
+                    var httpRequest = new HttpRequestMessage(HttpMethod.Post, openIdConfig.TokenURL)
+                    {
+                        Content = new FormUrlEncodedContent(httpParams)
+                    };
+                    var tokenResult = await httpClient.SendAsync(httpRequest).Result.Content.ReadAsStringAsync();
+                    var decodedToken = JsonSerializer.Deserialize<OpenIDResult>(tokenResult);
+                    var userJwt = decodedToken?.id_token ?? string.Empty;
+                    var userAccessToken = decodedToken?.access_token ?? string.Empty;
+                    if (!string.IsNullOrWhiteSpace(userJwt))
+                    {
+                        var tokenParser = new JsonWebTokenHandler();
+                        var parsedToken = tokenParser.ReadJsonWebToken(userJwt);
+                        var userEmailAddress = string.Empty;
+                        if (parsedToken.Claims.Any(x => x.Type == "email"))
+                        {
+                            userEmailAddress = parsedToken.Claims.First(x => x.Type == "email").Value;
+                        }
+                        else if (!string.IsNullOrWhiteSpace(openIdConfig.UserInfoURL) && !string.IsNullOrWhiteSpace(userAccessToken))
+                        {
+                            var userInfoHttpRequest = new HttpRequestMessage(HttpMethod.Get, openIdConfig.UserInfoURL);
+                            userInfoHttpRequest.Headers.Add("Authorization", $"Bearer {userAccessToken}");
+                            var userInfoResult = await httpClient.SendAsync(userInfoHttpRequest).Result.Content.ReadAsStringAsync();
+                            var userInfo = JsonSerializer.Deserialize<OpenIDUserInfo>(userInfoResult);
+                            if (!string.IsNullOrWhiteSpace(userInfo?.email ?? string.Empty))
+                            {
+                                userEmailAddress = userInfo?.email ?? string.Empty;
+                            }
+                        }
+                        if (!string.IsNullOrWhiteSpace(userEmailAddress))
+                        {
+                            var userData = _loginLogic.ValidateOpenIDUser(new LoginModel() { EmailAddress = userEmailAddress });
+                            if (userData.Id != default)
+                            {
+                                AuthCookie authCookie = new AuthCookie
+                                {
+                                    UserData = userData,
+                                    ExpiresOn = DateTime.Now.AddDays(1)
+                                };
+                                var serializedCookie = JsonSerializer.Serialize(authCookie);
+                                var encryptedCookie = _dataProtector.Protect(serializedCookie);
+                                Response.Cookies.Append("ACCESS_TOKEN", encryptedCookie, new CookieOptions { Expires = new DateTimeOffset(authCookie.ExpiresOn) });
+                                return new RedirectResult("/Home");
+                            }
+                            else
+                            {
+                                return View("OpenIDRegistration", model: userEmailAddress);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return new RedirectResult("/Login");
+            }
+            return new RedirectResult("/Login");
+        }
+        public async Task<IActionResult> RemoteAuthDebug(string code, string state = "")
+        {
+            return new RedirectResult("/Login");
+        }
+        [HttpPost]
+        public IActionResult Login(LoginModel credentials)
+        {
+            if (string.IsNullOrWhiteSpace(credentials.UserName) ||
+                string.IsNullOrWhiteSpace(credentials.Password))
+            {
+                return Json(false);
+            }
+            try
+            {
+                var userData = _loginLogic.ValidateUserCredentials(credentials);
+                if (userData.Id != default)
+                {
+                    AuthCookie authCookie = new AuthCookie
+                    {
+                        UserData = userData,
+                        ExpiresOn = DateTime.Now.AddDays(credentials.IsPersistent ? 30 : 1)
+                    };
+                    var serializedCookie = JsonSerializer.Serialize(authCookie);
+                    var encryptedCookie = _dataProtector.Protect(serializedCookie);
+                    Response.Cookies.Append("ACCESS_TOKEN", encryptedCookie, new CookieOptions { Expires = new DateTimeOffset(authCookie.ExpiresOn) });
+                    return Json(true);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error on saving config file.");
+            }
+            return Json(false);
+        }
+
+        [HttpPost]
+        public IActionResult Register(LoginModel credentials)
+        {
+            var result = _loginLogic.RegisterNewUser(credentials);
+            return Json(result);
+        }
+        [HttpPost]
+        public IActionResult RegisterOpenIdUser(LoginModel credentials)
+        {
+            var result = _loginLogic.RegisterOpenIdUser(credentials);
+            if (result.Success)
+            {
+                var userData = _loginLogic.ValidateOpenIDUser(new LoginModel() { EmailAddress = credentials.EmailAddress });
+                if (userData.Id != default)
+                {
+                    AuthCookie authCookie = new AuthCookie
+                    {
+                        UserData = userData,
+                        ExpiresOn = DateTime.Now.AddDays(1)
+                    };
+                    var serializedCookie = JsonSerializer.Serialize(authCookie);
+                    var encryptedCookie = _dataProtector.Protect(serializedCookie);
+                    Response.Cookies.Append("ACCESS_TOKEN", encryptedCookie, new CookieOptions { Expires = new DateTimeOffset(authCookie.ExpiresOn) });
+                }
+            }
+            return Json(result);
+        }
+        [HttpPost]
+        public IActionResult SendRegistrationToken(LoginModel credentials)
+        {
+            var result = _loginLogic.SendRegistrationToken(credentials);
+            return Json(result);
+        }
+        [HttpPost]
+        public IActionResult RequestResetPassword(LoginModel credentials)
+        {
+            var result = _loginLogic.RequestResetPassword(credentials);
+            return Json(result);
+        }
+        [HttpPost]
+        public IActionResult PerformPasswordReset(LoginModel credentials)
+        {
+            var result = _loginLogic.ResetPasswordByUser(credentials);
+            return Json(result);
+        }
+        [Authorize(Roles = nameof(UserData.IsRootUser))] 
+        [HttpPost]
+        public IActionResult CreateLoginCreds(LoginModel credentials)
+        {
+            try
+            {
+                var result = _loginLogic.CreateRootUserCredentials(credentials);
+                return Json(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error on saving config file.");
+            }
+            return Json(false);
+        }
+        [Authorize(Roles = nameof(UserData.IsRootUser))]
+        [HttpPost]
+        public IActionResult DestroyLoginCreds()
+        {
+            try
+            {
+                var result = _loginLogic.DeleteRootUserCredentials();
                 if (result)
                 {
                     Response.Cookies.Delete("ACCESS_TOKEN");
